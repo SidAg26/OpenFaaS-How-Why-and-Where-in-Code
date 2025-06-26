@@ -42,7 +42,7 @@ To make the most of this tutorial:
    ```
 
 3. **Navigate Through Chapters**:
-   Each chapter is a standalone Markdown file. Start with `Chapter_1.md` and proceed sequentially.
+   Each chapter is a standalone Markdown file. Start with `Overview.md` and proceed sequentially.
 
 ---
 
