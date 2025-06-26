@@ -36,14 +36,14 @@ flowchart TD
 
 ## Chapters
 
-1. [Gateway Application](01_gateway_application_.md)
-2. [Configuration](02_configuration_.md)
-3. [API Definition](03_api_definition_.md)
-4. [Request Middleware](04_request_middleware_.md)
-5. [Request Handling (Sync/Async)](05_request_handling__sync_async__.md)
-6. [Function Scaling](06_function_scaling_.md)
-7. [Provider Interaction](07_provider_interaction_.md)
-8. [Metrics & Monitoring](08_metrics___monitoring_.md)
+1. [Gateway Application](./Chapter 1.md)
+2. [Configuration](./Chapter 2.md)
+3. [API Definition](./Chapter 3.md)
+4. [Request Middleware](./Chapter 4.md)
+5. [Request Handling (Sync/Async)](./Chapter 5.md)
+6. [Function Scaling](./Chapter 6.md)
+7. [Provider Interaction](./Chapter 7.md)
+8. [Metrics & Monitoring](./Chapter 8.md)
 
 ---
 
