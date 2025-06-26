@@ -1,6 +1,6 @@
 # Chapter 2: Configuration
 
-Welcome back! In [Chapter 1: Gateway Application](01_gateway_application_.md), we learned that the OpenFaaS Gateway acts as the central entry point, receiving requests and routing them to the correct functions. But how does the Gateway know *where* to send requests? How does it know important details like how long to wait for a function's response or where to find the Prometheus monitoring server?
+Welcome back! In [Chapter 1: Gateway Application](./Chapter_1.md), we learned that the OpenFaaS Gateway acts as the central entry point, receiving requests and routing them to the correct functions. But how does the Gateway know *where* to send requests? How does it know important details like how long to wait for a function's response or where to find the Prometheus monitoring server?
 
 This is where **Configuration** comes in.
 
@@ -142,8 +142,8 @@ Once the configuration is read and stored in the `config` object (of type `*type
 For example:
 
 *   In `main.go`, when setting up the HTTP server, it uses `config.ReadTimeout` and `config.WriteTimeout` to configure the server's timeouts.
-*   The `functionProxy` handler (which we saw in Chapter 1 and will explore in [Request Handling (Sync/Async)](05_request_handling__sync_async__.md)) uses `config.UpstreamTimeout` when making the call to the function.
-*   Crucially, handlers that need to communicate with the **Provider** (like the `functionProxy` or handlers for listing functions) will use `config.FunctionsProviderURL` to know *where* to send their requests to the Provider. This interaction is detailed further in [Provider Interaction](07_provider_interaction_.md).
+*   The `functionProxy` handler (which we saw in Chapter 1 and will explore in [Request Handling (Sync/Async)](./Chapter_5.md)) uses `config.UpstreamTimeout` when making the call to the function.
+*   Crucially, handlers that need to communicate with the **Provider** (like the `functionProxy` or handlers for listing functions) will use `config.FunctionsProviderURL` to know *where* to send their requests to the Provider. This interaction is detailed further in [Provider Interaction](./Chapter_7.md).
 
 By reading configuration upfront, the Gateway's behavior is customized to the specific environment it's running in, without needing code changes.
 
@@ -153,7 +153,7 @@ Configuration is the essential step of providing the Gateway application with th
 
 Now that the Gateway is configured and ready, let's look at how it understands the *structure* of incoming requests and how it maps different URL paths to specific actions.
 
-[Chapter 3: API Definition](03_api_definition_.md)
+[Chapter 3: API Definition](./Chapter_3.md)
 
 ---
 
