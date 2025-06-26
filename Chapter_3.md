@@ -1,6 +1,6 @@
 # Chapter 3: API Definition
 
-Welcome back! In [Chapter 1: Gateway Application](01_gateway_application_.md), we learned that the Gateway is the central point for all interactions with OpenFaaS. In [Chapter 2: Configuration](02_configuration_.md), we saw how the Gateway gets its settings, like where to find the Provider.
+Welcome back! In [Chapter 1: Gateway Application](./Chapter_1.md), we learned that the Gateway is the central point for all interactions with OpenFaaS. In [Chapter 2: Configuration](./Chapter_2.md), we saw how the Gateway gets its settings, like where to find the Provider.
 
 Now, let's talk about how you, or other systems, actually *communicate* with the Gateway. How does the Gateway understand your request? Do you just type random things at it? No! The Gateway has a very specific set of commands and addresses it understands. This structured way of communicating is called the **API Definition**.
 
@@ -116,7 +116,7 @@ This will show you the complete, interactive documentation for all the Gateway's
 
 How does the Gateway application *use* this API Definition? The Go code within the Gateway doesn't *read* the `spec.openapi.yml` file at runtime (that file is mainly for documentation and code generation). Instead, the code is written to **implement** the endpoints defined in that specification.
 
-We saw this in [Chapter 1: Gateway Application](01_gateway_application_.md) when looking at the `gorilla/mux` router setup in `main.go`. The lines of code that define the routes *are* the implementation of the API Definition within the Gateway application.
+We saw this in [Chapter 1: Gateway Application](./Chapter_1.md) when looking at the `gorilla/mux` router setup in `main.go`. The lines of code that define the routes *are* the implementation of the API Definition within the Gateway application.
 
 Let's look at those snippets again, now with the context of the API Definition:
 
@@ -166,7 +166,7 @@ The API Definition is the essential contract that specifies how users and client
 
 Now that we understand the Gateway's API contract, let's look at what happens to a request *immediately* after it arrives but *before* it gets to the specific handler function. This involves **Request Middleware**.
 
-[Chapter 4: Request Middleware](04_request_middleware_.md)
+[Chapter 4: Request Middleware](./Chapter_4.md)
 
 ---
 
