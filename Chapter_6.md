@@ -1,6 +1,6 @@
 # Chapter 6: Function Scaling
 
-Welcome back! In [Chapter 5: Request Handling (Sync/Async)](05_request_handling__sync_async__.md), we learned how the OpenFaaS Gateway handles individual requests, either by forwarding them directly to a function (synchronous) or by placing them on a queue (asynchronous). But what happens when your function gets *many* requests all at once? A single function instance can only handle so much traffic.
+Welcome back! In [Chapter 5: Request Handling (Sync/Async)](./Chapter_5.md), we learned how the OpenFaaS Gateway handles individual requests, either by forwarding them directly to a function (synchronous) or by placing them on a queue (asynchronous). But what happens when your function gets *many* requests all at once? A single function instance can only handle so much traffic.
 
 This is where **Function Scaling** comes in.
 
@@ -23,7 +23,7 @@ The problem is handling variable and potentially high demand. You don't want to 
 The OpenFaaS Gateway plays a crucial role in the **scale-from-zero** scenario. When a request arrives for a function that isn't running, the Gateway must:
 
 1.  Detect that the function has zero replicas.
-2.  Instruct the underlying platform (like Kubernetes or Docker Swarm, via the [Provider](07_provider_interaction_.md)) to start at least one replica.
+2.  Instruct the underlying platform (like Kubernetes or Docker Swarm, via the [Provider](./Chapter_7.md)) to start at least one replica.
 3.  Wait for the new replica(s) to become ready to receive traffic.
 4.  Forward the original request to a ready replica.
 
@@ -34,13 +34,13 @@ Subsequent requests that arrive while the function is scaling up might also be h
 Let's trace the path of the *first* request for `hello-world` when it has 0 replicas:
 
 1.  You send a `POST /function/hello-world` request to the Gateway.
-2.  The request goes through routing and middleware ([Chapter 3: API Definition](03_api_definition_.md), [Chapter 4: Request Middleware](04_request_middleware_.md)).
-3.  Before hitting the standard synchronous request handler ([Chapter 5: Request Handling (Sync/Async)](05_request_handling__sync_async__.md)), the request is intercepted by a **scaling component**.
-4.  The scaling component checks the current status of `hello-world` replicas (by asking the [Provider](07_provider_interaction_.md)).
+2.  The request goes through routing and middleware ([Chapter 3: API Definition](./Chapter_3.md), [Chapter 4: Request Middleware](./Chapter_4.md)).
+3.  Before hitting the standard synchronous request handler ([Chapter 5: Request Handling (Sync/Async)](./Chapter_5.md)), the request is intercepted by a **scaling component**.
+4.  The scaling component checks the current status of `hello-world` replicas (by asking the [Provider](./Chapter_7.md)).
 5.  It finds that `hello-world` has 0 replicas.
-6.  It instructs the [Provider](07_provider_interaction_.md) to scale `hello-world` up to its minimum replica count (usually 1, but can be configured).
-7.  The Gateway's scaling component then enters a waiting loop, periodically asking the [Provider](07_provider_interaction_.md) if the new replica(s) are "available" (ready to accept requests).
-8.  Once at least one replica is reported as available, the scaling component allows the original request to proceed to the standard synchronous request handler ([Chapter 5: Request Handling (Sync/Async)](05_request_handling__sync_async__.md)).
+6.  It instructs the [Provider](./Chapter_7.md) to scale `hello-world` up to its minimum replica count (usually 1, but can be configured).
+7.  The Gateway's scaling component then enters a waiting loop, periodically asking the [Provider](./Chapter_7.md) if the new replica(s) are "available" (ready to accept requests).
+8.  Once at least one replica is reported as available, the scaling component allows the original request to proceed to the standard synchronous request handler ([Chapter 5: Request Handling (Sync/Async)](./Chapter_5.md)).
 9.  The request handler forwards the request to the now-ready `hello-world` instance.
 10. The function executes, and the response is sent back through the Gateway to you.
 
@@ -248,17 +248,17 @@ func (f *FunctionScaler) Scale(functionName, namespace string) FunctionScaleResu
 
 **Explanation:**
 
-*   The `Scale` method first checks a `Cache` (`FunctionCacher`) to quickly see if the function was recently known to have available replicas. This avoids hitting the [Provider](07_provider_interaction_.md) on *every* request.
-*   It then uses `SingleFlight` to ensure that if multiple requests for the *same* function arrive at the same time, only one of them triggers the actual check/scale process via the [Provider](07_provider_interaction_.md). The others wait for the first one's result.
-*   It calls `f.Config.ServiceQuery.GetReplicas` to get the current status from the [Provider](07_provider_interaction_.md) (replica count, available replicas).
-*   If the `GetReplicas` call shows 0 *desired* replicas (`queryResponse.Replicas == 0`), it enters a `Retry` loop. This loop ensures that if setting replicas fails the first time, it tries again. Inside the retry, it calls `f.Config.ServiceQuery.SetReplicas` to tell the [Provider](07_provider_interaction_.md) to scale up.
+*   The `Scale` method first checks a `Cache` (`FunctionCacher`) to quickly see if the function was recently known to have available replicas. This avoids hitting the [Provider](./Chapter_7.md) on *every* request.
+*   It then uses `SingleFlight` to ensure that if multiple requests for the *same* function arrive at the same time, only one of them triggers the actual check/scale process via the [Provider](./Chapter_7.md). The others wait for the first one's result.
+*   It calls `f.Config.ServiceQuery.GetReplicas` to get the current status from the [Provider](./Chapter_7.md) (replica count, available replicas).
+*   If the `GetReplicas` call shows 0 *desired* replicas (`queryResponse.Replicas == 0`), it enters a `Retry` loop. This loop ensures that if setting replicas fails the first time, it tries again. Inside the retry, it calls `f.Config.ServiceQuery.SetReplicas` to tell the [Provider](./Chapter_7.md) to scale up.
 *   After triggering a scale-up (or if the function already had desired replicas > 0 but none available yet), it enters a polling `for` loop (`MaxPollCount`).
 *   Inside this loop, it repeatedly calls `f.Config.ServiceQuery.GetReplicas` to check `AvailableReplicas`.
 *   It waits (`time.Sleep`) between polls (`FunctionPollInterval`).
 *   Once `AvailableReplicas > 0`, the function is ready, and `Scale` returns `Available: true`.
 *   If the loop finishes without any replicas becoming available within the configured time, the scale-from-zero process times out for this request.
 
-The `ServiceQuery` interface defines the contract for interacting with the [Provider](07_provider_interaction_.md) to get and set replica counts:
+The `ServiceQuery` interface defines the contract for interacting with the [Provider](./Chapter_7.md) to get and set replica counts:
 
 ```go
 // --- File: gateway/scaling/service_query.go ---
@@ -277,15 +277,15 @@ type ServiceQueryResponse struct {
 }
 ```
 
-This shows that the `FunctionScaler` doesn't talk directly to Kubernetes or Docker Swarm; it talks to an object that implements the `ServiceQuery` interface, and that object is responsible for the actual communication with the underlying platform via the [Provider](07_provider_interaction_.md).
+This shows that the `FunctionScaler` doesn't talk directly to Kubernetes or Docker Swarm; it talks to an object that implements the `ServiceQuery` interface, and that object is responsible for the actual communication with the underlying platform via the [Provider](./Chapter_7.md).
 
 ## Conclusion
 
-Function Scaling, particularly the scale-from-zero feature, is essential for making OpenFaaS efficient and responsive to variable load. The Gateway's role is to detect when a function with zero replicas receives traffic, trigger the underlying [Provider](07_provider_interaction_.md) to scale it up, and wait for instances to become ready before forwarding the request. This introduces latency for the initial request but ensures functions are only consuming resources when they are needed. The `FunctionScaler` uses caching, single-flight concurrency control, polling, and retries to robustly handle this process by interacting with the [Provider](07_provider_interaction_.md)'s `ServiceQuery` interface.
+Function Scaling, particularly the scale-from-zero feature, is essential for making OpenFaaS efficient and responsive to variable load. The Gateway's role is to detect when a function with zero replicas receives traffic, trigger the underlying [Provider](./Chapter_7.md) to scale it up, and wait for instances to become ready before forwarding the request. This introduces latency for the initial request but ensures functions are only consuming resources when they are needed. The `FunctionScaler` uses caching, single-flight concurrency control, polling, and retries to robustly handle this process by interacting with the [Provider](./Chapter_7.md)'s `ServiceQuery` interface.
 
-Understanding that the Gateway relies on the [Provider](07_provider_interaction_.md) for information about function status and to perform the actual scaling actions is key. In the next chapter, we'll explore this critical interaction further.
+Understanding that the Gateway relies on the [Provider](./Chapter_7.md) for information about function status and to perform the actual scaling actions is key. In the next chapter, we'll explore this critical interaction further.
 
-[Chapter 7: Provider Interaction](07_provider_interaction_.md)
+[Chapter 7: Provider Interaction](./Chapter_7.md)
 
 ---
 
