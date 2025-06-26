@@ -1,6 +1,6 @@
 # Chapter 4: Request Middleware
 
-Welcome back! In [Chapter 3: API Definition](03_api_definition_.md), we learned how the OpenFaaS Gateway defines the specific paths and methods you use to interact with it, like sending a `POST` request to `/function/hello-world` to invoke your function. The Gateway uses a router to figure out which piece of code (which "handler") should process that specific request.
+Welcome back! In [Chapter 3: API Definition](./Chapter_3.md), we learned how the OpenFaaS Gateway defines the specific paths and methods you use to interact with it, like sending a `POST` request to `/function/hello-world` to invoke your function. The Gateway uses a router to figure out which piece of code (which "handler") should process that specific request.
 
 But what happens *between* the moment the Gateway receives the request and the moment it actually starts running the code responsible for, say, invoking the function? This is where **Request Middleware** comes in.
 
@@ -29,7 +29,7 @@ Request Middleware components are like checkpoints or preparation stations that 
 Think of the Gateway's request processing pipeline like an assembly line, or perhaps better, like passing a letter through several offices before it reaches its final recipient:
 
 1.  The letter (Request) arrives at the main mailroom (Router).
-2.  The mailroom identifies the recipient (the specific Handler based on the [API Definition](03_api_definition_.md)).
+2.  The mailroom identifies the recipient (the specific Handler based on the [API Definition](./Chapter_3.md)).
 3.  BUT, before sending it *directly* to the recipient, the mailroom first sends it to the "Security Check" office (Middleware 1).
 4.  The Security Check office checks for forbidden items, perhaps stamps it with a unique tracking number, and then passes it to the "Header Attaching" office (Middleware 2).
 5.  The Header Attaching office adds necessary official stamps (like a "Processed" stamp or the Call ID). Then it passes it to the "Final Recipient" office (the actual Handler).
@@ -89,11 +89,11 @@ Let's revisit our use case: adding a unique Call ID and ensuring CORS headers fo
 2.  **CORS Middleware:** Another middleware component is responsible for setting specific response headers like `Access-Control-Allow-Origin`, `Access-Control-Allow-Headers`, etc. This middleware typically runs *after* the main handler has generated a response, adding these headers before the response is sent back to the client.
 
 When you send your `POST /function/hello-world` request to the Gateway:
-*   The router matches the path to the `functionProxy` handler (from [Chapter 3: API Definition](03_api_definition_.md)).
+*   The router matches the path to the `functionProxy` handler (from [Chapter 3: API Definition](./Chapter_3.md)).
 *   But `functionProxy` isn't called directly. Instead, the router calls the *first* middleware in the chain configured for this route.
 *   The Call ID middleware runs, adds the `X-Call-Id` header to the request, and calls the next middleware.
 *   (Other middleware, potentially auth, might run here).
-*   Eventually, the request reaches the `functionProxy` handler, which uses the now-modified request (with the Call ID) to interact with the Provider and invoke `hello-world` (as discussed in [Chapter 5: Request Handling (Sync/Async)](05_request_handling__sync_async__.md) and [Chapter 7: Provider Interaction](07_provider_interaction_.md)).
+*   Eventually, the request reaches the `functionProxy` handler, which uses the now-modified request (with the Call ID) to interact with the Provider and invoke `hello-world` (as discussed in [Chapter 5: Request Handling (Sync/Async)](./Chapter_5.md) and [Chapter 7: Provider Interaction](./Chapter_7.md)).
 *   The `functionProxy` handler gets the response from `hello-world`.
 *   The response travels back up the middleware chain.
 *   The CORS middleware intercepts the response and adds the required `Access-Control-*` headers.
@@ -247,7 +247,7 @@ Request Middleware provides a clean and modular way to intercept incoming reques
 
 Now that we understand how requests are received, configured, routed, and pre-processed by middleware, let's dive into the core task: the **Request Handling** logic itself, specifically how the Gateway deals with both synchronous and asynchronous function invocations.
 
-[Chapter 5: Request Handling (Sync/Async)](05_request_handling__sync_async__.md)
+[Chapter 5: Request Handling (Sync/Async)](./Chapter_5.md)
 
 ---
 
