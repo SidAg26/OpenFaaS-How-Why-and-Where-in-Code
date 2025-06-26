@@ -1,6 +1,6 @@
 # Chapter 5: Request Handling (Sync/Async)
 
-Welcome back! In the previous chapters, we've explored the OpenFaaS Gateway's central role ([Chapter 1: Gateway Application](01_gateway_application_.md)), how it gets its settings ([Chapter 2: Configuration](02_configuration_.md)), how it defines the ways you can interact with it ([Chapter 3: API Definition](03_api_definition_.md)), and how common tasks like tracing and security are handled by middleware *before* the core logic runs ([Chapter 4: Request Middleware](04_request_middleware_.md)).
+Welcome back! In the previous chapters, we've explored the OpenFaaS Gateway's central role ([Chapter 1: Gateway Application](./Chapter_1.md)), how it gets its settings ([Chapter 2: Configuration](./Chapter_2.md)), how it defines the ways you can interact with it ([Chapter 3: API Definition](./Chapter_3.md)), and how common tasks like tracing and security are handled by middleware *before* the core logic runs ([Chapter 4: Request Middleware](./Chapter_4.md)).
 
 Now we arrive at the heart of invoking a function: **Request Handling**. Once a request makes it through the routing and middleware layers, how does the Gateway actually *do* the work of getting that request to your function and potentially getting a response back? This chapter focuses on the two primary ways the Gateway handles function invocation requests: **synchronously** and **asynchronously**.
 
@@ -30,7 +30,7 @@ Here's what happens:
 1.  You send an HTTP request (e.g., `POST /function/hello-world`) to the Gateway.
 2.  The Gateway receives the request, routes it, and middleware runs.
 3.  The Gateway's **Synchronous Request Handler** component takes over.
-4.  This handler finds the `hello-world` function (by asking the [Provider](07_provider_interaction_.md)).
+4.  This handler finds the `hello-world` function (by asking the [Provider](./Chapter_7.md)).
 5.  It makes a new HTTP request *from the Gateway* to the actual running instance of your `hello-world` function.
 6.  It waits for the `hello-world` function to finish and send its HTTP response back to the Gateway.
 7.  Once the Gateway receives the function's response (status code, headers, body), it copies them and sends them back as the response to your original request.
@@ -125,11 +125,11 @@ For our `hello-world` use case:
 *   To get the output "Hello!" immediately, we use the **synchronous** approach. The Gateway routes the `POST /function/hello-world` request to its synchronous handler. This handler calls the `hello-world` function, gets "Hello!" back, and returns it to our client.
 *   To simply trigger `hello-world` to run in the background, we use the **asynchronous** approach. The Gateway routes the `POST /async-function/hello-world` request to its asynchronous handler. This handler packages the request details, puts them on the queue, and returns `202 Accepted` to our client. The function runs later via a queue worker.
 
-The OpenFaaS [API Definition](03_api_definition_.md) clearly defines endpoints like `/function/{name}` for synchronous invocation and `/async-function/{name}` for asynchronous invocation, making it explicit to the client how the request will be handled.
+The OpenFaaS [API Definition](./Chapter_3.md) clearly defines endpoints like `/function/{name}` for synchronous invocation and `/async-function/{name}` for asynchronous invocation, making it explicit to the client how the request will be handled.
 
 ## Gateway's Internal Implementation (Simplified)
 
-Let's look at the core Go code that handles these two types of requests within the Gateway. These are the "handler functions" that the router (from [Chapter 1: Gateway Application](01_gateway_application_.md) and [Chapter 3: API Definition](03_api_definition_.md)) directs the requests to, potentially after middleware has run ([Chapter 4: Request Middleware](04_request_middleware_.md)).
+Let's look at the core Go code that handles these two types of requests within the Gateway. These are the "handler functions" that the router (from [Chapter 1: Gateway Application](./Chapter_1.md) and [Chapter 3: API Definition](./Chapter_3.md) directs the requests to, potentially after middleware has run ([Chapter 4: Request Middleware](./Chapter_4.md)).
 
 The `types.HandlerSet` struct (introduced in Chapter 4) holds references to these handler functions:
 
@@ -367,7 +367,7 @@ Request Handling is where the OpenFaaS Gateway performs the core task of invokin
 
 Now that we've covered how the Gateway handles individual requests, let's look at how it manages the number of function instances running to handle potentially varying loads.
 
-[Chapter 6: Function Scaling](06_function_scaling_.md)
+[Chapter 6: Function Scaling](./Chapter_6.md)
 
 ---
 
