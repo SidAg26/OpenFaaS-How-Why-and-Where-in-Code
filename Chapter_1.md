@@ -33,7 +33,7 @@ Let's take our simple use case: calling the `hello-world` function via HTTP.
 3.  The **Gateway** receives the request.
 4.  It sees the path `/function/hello-world`.
 5.  Based on its routing rules, it understands this means "invoke the function named `hello-world`".
-6.  The Gateway then talks to the OpenFaaS **Provider** (which we'll cover later in [Provider Interaction](07_provider_interaction_.md)) to find or potentially start the `hello-world` function.
+6.  The Gateway then talks to the OpenFaaS **Provider** (which we'll cover later in [Provider Interaction](./Chapter_7.md)) to find or potentially start the `hello-world` function.
 7.  The Gateway forwards your request to the function instance provided by the Provider.
 8.  The `hello-world` function runs and sends a response back to the Provider.
 9.  The Provider sends the response back to the Gateway.
@@ -107,7 +107,7 @@ func main() {
 
 **Explanation:**
 
-*   The code starts by reading necessary settings (like timeouts, provider URL) using `readConfig`. We'll dive into these settings in the next chapter, [Configuration](02_configuration_.md).
+*   The code starts by reading necessary settings (like timeouts, provider URL) using `readConfig`. We'll dive into these settings in the next chapter, [Configuration](./Chapter_2.md).
 *   `mux.NewRouter()` creates an object (`r`) that helps us map specific URL paths (like `/function/hello-world`) to specific pieces of code (called "handlers") that will process requests for those paths.
 *   After setting up the routes (which we'll see next), it creates an `http.Server` object (`s`).
 *   `s.ListenAndServe()` starts the web server, making the Gateway available to receive requests on port 8080.
@@ -140,7 +140,7 @@ The router (`r`) is then used to define which **handler** (the code that process
 
 **Explanation:**
 
-*   `faasHandlers` is a structure holding different handler functions, each responsible for a specific API endpoint or function (like proxying requests, listing functions, etc.). We'll explore handlers more in [Request Handling (Sync/Async)](05_request_handling__sync_async__.md).
+*   `faasHandlers` is a structure holding different handler functions, each responsible for a specific API endpoint or function (like proxying requests, listing functions, etc.). We'll explore handlers more in [Request Handling (Sync/Async)](./Chapter_5.md).
 *   `r.HandleFunc(...)` is how routes are defined.
     *   The first argument is the URL path pattern. Notice patterns like `/function/{name:...}` which capture the function name from the URL.
     *   The second argument is the `http.HandlerFunc` (or a function that behaves like one) that will be called when a request matches this path.
@@ -155,7 +155,7 @@ The Gateway Application is the essential front door of your OpenFaaS system. It 
 
 Now that we understand the Gateway's role as the central hub, let's look at how it gets configured and learns about settings like timeouts and the location of the Provider.
 
-[Chapter 2: Configuration](02_configuration_.md)
+[Chapter 2: Configuration](./Chapter_2.md)
 
 ---
 
